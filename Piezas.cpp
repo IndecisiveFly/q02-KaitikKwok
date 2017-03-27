@@ -108,5 +108,58 @@ Piece Piezas::pieceAt(int row, int column)
  **/
 Piece Piezas::gameState()
 {
-  return Invalid;
+  Piece winner=Blank;
+  int x_cnt=0;
+  int o_cnt=0;
+
+  for (int col=0; col<4; col++)
+  {
+    for (int row=0; row<3; row++)
+    {
+      if(board[row][col]==Blank)
+      {
+        winner=Invalid; //game not done
+        return winner;
+      }
+    }
+  }
+
+  //only progress if game if finished
+  //calculate totals
+  //column check
+  for (int i=0; i<4; i++)
+  {
+    if (board[0][i]==board[1][i] && board[0][i]==board[2][i]) //column has matching piece
+    {
+      if (board[0][i]==X) //increase score for who is matching
+        x_cnt++;
+      else
+        o_cnt++;
+    }
+  }
+  //row check
+  for (int i=0; i<3; i++)
+  {
+    if (board[i][0]==board[i][1] && board[i][2]==board[i][3] && board[i][0]==board[i][2]) //row has matching piece
+    {
+      if (board[i][0]==X) //increase score
+        x_cnt++;
+      else
+        o_cnt++;
+    }
+  }
+
+  if (x_cnt==o_cnt)
+  {
+    winner=Blank;
+  }
+  else if (x_cnt>o_cnt)
+  {
+    winner=X;
+  }
+  else
+  {
+    winner=O;
+  }
+  return winner;
 }

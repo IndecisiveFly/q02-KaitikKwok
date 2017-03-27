@@ -14,6 +14,102 @@ class PiezasTest : public ::testing::Test
 		virtual void TearDown(){} //clean up after each test, (before destructor) 
 };
 
+TEST(PiezasTest, tied)
+{
+  Piezas piezas;
+  /*
+   *OOXX
+   *OXOX
+   *XXOO
+   */
+  piezas.dropPiece(0); //X
+  piezas.dropPiece(3);
+  piezas.dropPiece(1); //X
+  piezas.dropPiece(2);
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(0);
+  piezas.dropPiece(1); //X
+  piezas.dropPiece(2);
+  piezas.dropPiece(2); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(0);
+
+  Piece check=piezas.gameState();
+  ASSERT_EQ(check,Blank);
+}
+
+TEST(PiezasTest, not_done)
+{
+  Piezas piezas;
+  /*
+   *X
+   *X
+   *XOO
+   */
+  piezas.dropPiece(0);
+  piezas.dropPiece(1);
+  piezas.dropPiece(0);
+  piezas.dropPiece(2);
+  piezas.dropPiece(0);
+
+  Piece check=piezas.gameState();
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, O_win)
+{
+  Piezas piezas;
+  /*
+   *OOOO
+   *XOXX
+   *XOXX
+   */
+
+  piezas.dropPiece(0); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(0); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(2); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(0);
+  piezas.dropPiece(2); //X
+  piezas.dropPiece(2); 
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(3);
+
+  Piece check=piezas.gameState();
+
+  ASSERT_EQ(O,check);
+}
+
+TEST(PiezasTest, X_win)
+{
+  Piezas piezas;
+  /*
+   *OOOX
+   *OOOX
+   *XXXX
+   */
+  piezas.dropPiece(0); //X
+  piezas.dropPiece(0);
+  piezas.dropPiece(1); //X
+  piezas.dropPiece(0); 
+  piezas.dropPiece(2); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(1);
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(2); 
+  piezas.dropPiece(3); //X
+  piezas.dropPiece(2);
+
+  Piece check=piezas.gameState();
+
+  ASSERT_EQ(X,check);
+}
+
 TEST(PiezasTest, standared_reset)
 {
   Piezas piezas;
@@ -70,7 +166,39 @@ TEST(PiezasTest, check_blank)
   ASSERT_EQ(check,Blank);
 }
 
-TEST(PiezasTest, check_out_of_bounds)
+TEST(PiezasTest, check_out_of_bounds_neg_row)
+{
+  Piezas piezas;
+  Piece check=piezas.pieceAt(-1,3);
+
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, check_out_of_bounds_neg_col)
+{
+  Piezas piezas;
+  Piece check=piezas.pieceAt(0,-2);
+
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, check_out_of_bounds_neg_both)
+{
+  Piezas piezas;
+  Piece check=piezas.pieceAt(-1,-4);
+
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, check_out_of_bounds_pos_row)
+{
+  Piezas piezas;
+  Piece check=piezas.pieceAt(6,2);
+
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, check_out_of_bounds_pos_col)
 {
   Piezas piezas;
   Piece check=piezas.pieceAt(0,4);
@@ -88,6 +216,19 @@ TEST(PiezasTest, check_stacked_piece)
   ASSERT_EQ(check,O);
 }
 
+TEST(PiezasTest, check_stacked_piece_elsewhere)
+{
+  Piezas piezas;
+  piezas.dropPiece(0);
+  piezas.dropPiece(2);
+  piezas.dropPiece(0);
+  piezas.dropPiece(3);
+
+  Piece check=piezas.pieceAt(1,0);
+
+  ASSERT_EQ(check,X);
+}
+
 TEST(PiezasTest, check_first_placed)
 {
   Piezas piezas;
@@ -97,10 +238,18 @@ TEST(PiezasTest, check_first_placed)
   ASSERT_EQ(check,X);
 }
 
-TEST(PiezasTest, place_into_invalid)
+TEST(PiezasTest, place_into_invalid_pos)
 {
   Piezas piezas;
   Piece check=piezas.dropPiece(4);
+
+  ASSERT_EQ(check,Invalid);
+}
+
+TEST(PiezasTest, place_into_invalid_neg)
+{
+  Piezas piezas;
+  Piece check=piezas.dropPiece(-1);
 
   ASSERT_EQ(check,Invalid);
 }
